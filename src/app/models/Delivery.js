@@ -1,6 +1,6 @@
 import Sequelize, { Model } from 'sequelize';
 
-class DeliveryMan extends Model {
+class Delivery extends Model {
   static init(sequelize) {
     super.init(
       {
@@ -10,11 +10,15 @@ class DeliveryMan extends Model {
           autoIncrement: true,
         },
         name: Sequelize.STRING,
-        avatar_id: Sequelize.INTEGER,
-        email: Sequelize.STRING,
+        street: Sequelize.STRING,
+        number: Sequelize.INTEGER,
+        complement: Sequelize.STRING,
+        state: Sequelize.STRING,
+        city: Sequelize.STRING,
+        zipcode: Sequelize.STRING,
       },
       {
-        tableName: 'deliveryman',
+        tableName: 'recipients',
         createdAt: 'created_at',
         updatedAt: 'updated_at',
         sequelize,
@@ -25,8 +29,8 @@ class DeliveryMan extends Model {
   }
 
   static associate(models) {
-    this.belongsTo(models.File, { foreignKey: 'avatar_id' });
+    this.belongsTo(models.Recipient, { foreignKey: 'recipient_id' });
   }
 }
 
-export default DeliveryMan;
+export default Delivery;
