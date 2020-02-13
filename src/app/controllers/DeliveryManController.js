@@ -1,28 +1,31 @@
 import * as Yup from 'yup';
-import Sequelize from 'sequelize';
+import { Sequelize } from 'sequelize';
 import DeliveryMan from '../models/DeliveryMan';
+import Delivery from '../models/Delivery';
 
 class DeliveryManController {
   async index(req, res) {
-    const { email, id } = req.params;
+    const { delivered, id } = req.params;
 
-    let deliverymen = [];
+    let deliveries = [];
 
-    if (id) {
-      deliverymen = await DeliveryMan.findByPk(id);
-    } else if (email) {
-      deliverymen = await DeliveryMan.findAll({
+    if (delivered) {
+      deliveries = await Delivery.findAll({
         where: {
-          email: {
-            [Sequelize.Op.like]: `%${email}%`,
-          },
+          id: { id },
+          end_date: { [Sequelize.Op.ne]: null },
         },
       });
     } else {
-      deliverymen = await DeliveryMan.findAll();
+      deliveries = await Delivery.findAll({
+        where: {
+          id: { id },
+          canceled_at: null,
+          end_date: null,
+        },
+      });
     }
-
-    return res.json(deliverymen);
+    return res.json(deliveries);
   }
 
   async store(req, res) {

@@ -9,16 +9,16 @@ class Delivery extends Model {
           primaryKey: true,
           autoIncrement: true,
         },
-        name: Sequelize.STRING,
-        street: Sequelize.STRING,
-        number: Sequelize.INTEGER,
-        complement: Sequelize.STRING,
-        state: Sequelize.STRING,
-        city: Sequelize.STRING,
-        zipcode: Sequelize.STRING,
+        recipient_id: Sequelize.INTEGER,
+        deliveryman_id: Sequelize.INTEGER,
+        signature_id: Sequelize.INTEGER,
+        product: Sequelize.STRING,
+        canceled_at: Sequelize.DATE,
+        start_date: Sequelize.DATE,
+        end_date: Sequelize.DATE,
       },
       {
-        tableName: 'recipients',
+        tableName: 'delivery',
         createdAt: 'created_at',
         updatedAt: 'updated_at',
         sequelize,
@@ -30,6 +30,8 @@ class Delivery extends Model {
 
   static associate(models) {
     this.belongsTo(models.Recipient, { foreignKey: 'recipient_id' });
+    this.belongsTo(models.DeliveryMan, { foreignKey: 'deliveryman_id' });
+    this.belongsTo(models.File, { foreignKey: 'signature_id' });
   }
 }
 
