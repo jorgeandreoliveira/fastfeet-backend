@@ -11,24 +11,51 @@ import { Sequelize } from 'sequelize';
 import Delivery from '../models/Delivery';
 import DeliveryMan from '../models/DeliveryMan';
 import Mail from '../../lib/Mail';
+import Recipient from '../models/Recipient';
 
 class DeliveryController {
   async index(req, res) {
     const { id } = req.params;
 
-    let deliveries;
+    let deliveries = [];
 
-    if (id) deliveries = await Delivery.findByPk(id);
-    else deliveries = await Delivery.findAll();
-
+    if (id) {
+      deliveries = await Delivery.findByPk(id);
+    } else {
+      deliveries = await Delivery.findAll({
+        attributes: [
+          'id',
+          'recipient_id',
+          'deliveryman_id',
+          'product',
+          'canceled_at',
+          'start_date',
+          'end_date',
+          'status',
+        ],
+        include: [
+          {
+            model: Recipient,
+            attributes: ['id', 'name', 'state', 'city'],
+          },
+          {
+            model: DeliveryMan,
+            attributes: ['id', 'name'],
+          },
+        ],
+      });
+    }
     return res.json(deliveries);
   }
 
   async store(req, res) {
     const schema = Yup.object().shape({
-      recipient_id: Yup.integer().required(),
-      deliveryman_id: Yup.integer().required(),
-      signature_id: Yup.integer().required(),
+      recipient_id: Yup.number()
+        .integer()
+        .required(),
+      deliveryman_id: Yup.number()
+        .integer()
+        .required(),
       product: Yup.string().required(),
     });
 
@@ -44,13 +71,13 @@ class DeliveryController {
       product,
     } = await Delivery.create(req.body);
 
-    const deliveryMan = await DeliveryMan.findByPk(recipient_id);
+    /* const deliveryMan = await DeliveryMan.findByPk(recipient_id);
 
     await Mail.sendMail({
       to: `${deliveryMan.name} <${deliveryMan.email}>`,
       subject: 'Product available for delivery',
       text: `${product}`,
-    });
+    }); */
 
     return res.json({
       id,

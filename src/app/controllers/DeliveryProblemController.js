@@ -12,7 +12,9 @@ class DeliveryProblemController {
 
   async store(req, res) {
     const schema = Yup.object().shape({
-      delivery_id: Yup.integer().required(),
+      delivery_id: Yup.number()
+        .integer()
+        .required(),
       description: Yup.string().required(),
     });
 

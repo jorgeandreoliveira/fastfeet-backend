@@ -9,6 +9,10 @@ class DeliveryManController {
 
     let deliveries = [];
 
+    if (!delivered && !id) {
+      return res.json(await DeliveryMan.findAll());
+    }
+
     if (delivered) {
       deliveries = await Delivery.findAll({
         where: {
