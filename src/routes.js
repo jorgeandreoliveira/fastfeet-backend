@@ -20,7 +20,7 @@ routes.post('/files', upload.single('file'), FileController.store);
 routes.post('/users', UserController.store);
 routes.post('/sessions', SessionController.store);
 
-// Autenticação
+// Autentication
 routes.use(authMiddleware);
 
 routes.put('/users', UserController.update);
@@ -33,6 +33,7 @@ routes.post('/recipient', RecipientController.store);
 routes.put('/recipient/:id', RecipientController.update);
 
 // Delivery
+routes.get('/deliveries', DeliveryController.index);
 routes.get('/delivery/:id', DeliveryController.index);
 routes.post('/delivery', DeliveryController.store);
 routes.put('/delivery/:id', DeliveryController.update);

@@ -16,9 +16,12 @@ class DeliveryController {
   async index(req, res) {
     const { id } = req.params;
 
-    const delivery = await Delivery.findByPk(id);
+    let deliveries;
 
-    return res.json(delivery);
+    if (id) deliveries = await Delivery.findByPk(id);
+    else deliveries = await Delivery.findAll();
+
+    return res.json(deliveries);
   }
 
   async store(req, res) {
