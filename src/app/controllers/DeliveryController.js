@@ -1,12 +1,5 @@
 import * as Yup from 'yup';
-import {
-  startOfHour,
-  getDay,
-  getMonth,
-  getYear,
-  isBefore,
-  parseISO,
-} from 'date-fns';
+import { getHours, isBefore, parseISO } from 'date-fns';
 import { Sequelize } from 'sequelize';
 import Delivery from '../models/Delivery';
 import DeliveryMan from '../models/DeliveryMan';
@@ -15,12 +8,63 @@ import Recipient from '../models/Recipient';
 
 class DeliveryController {
   async index(req, res) {
-    const { id } = req.params;
+    const { id, q } = req.params;
 
     let deliveries = [];
 
-    if (id) {
-      deliveries = await Delivery.findByPk(id);
+    if (q) {
+      deliveries = await Delivery.findAll({
+        where: {
+          product: {
+            [Sequelize.Op.like]: `%${q}%`,
+          },
+        },
+        attributes: [
+          'id',
+          'recipient_id',
+          'deliveryman_id',
+          'product',
+          'canceled_at',
+          'start_date',
+          'end_date',
+          'status',
+        ],
+        include: [
+          {
+            model: Recipient,
+            attributes: [
+              'id',
+              'name',
+              'street',
+              'number',
+              'state',
+              'city',
+              'zipcode',
+            ],
+          },
+          {
+            model: DeliveryMan,
+            attributes: ['id', 'name'],
+          },
+        ],
+      });
+    } else if (id) {
+      deliveries = await Delivery.findByPk(id, {
+        include: [
+          {
+            model: Recipient,
+            attributes: [
+              'id',
+              'name',
+              'street',
+              'number',
+              'state',
+              'city',
+              'zipcode',
+            ],
+          },
+        ],
+      });
     } else {
       deliveries = await Delivery.findAll({
         attributes: [
@@ -36,7 +80,15 @@ class DeliveryController {
         include: [
           {
             model: Recipient,
-            attributes: ['id', 'name', 'state', 'city'],
+            attributes: [
+              'id',
+              'name',
+              'street',
+              'number',
+              'state',
+              'city',
+              'zipcode',
+            ],
           },
           {
             model: DeliveryMan,
@@ -104,8 +156,8 @@ class DeliveryController {
       // A data de início deve ser cadastrada assim que for feita a retirada do produto pelo entregador,
       // e as retiradas só podem ser feitas entre as 08:00 e 18:00h.
       if (
-        startOfHour(parseISO(start_date)) < 8 ||
-        startOfHour(parseISO(start_date)) > 18
+        getHours(parseISO(start_date)) < 8 ||
+        getHours(parseISO(start_date)) > 18
       )
         return res
           .status(400)
@@ -114,29 +166,22 @@ class DeliveryController {
       // O entregador só pode fazer 5 retiradas por dia
       deliveries = await Delivery.findAndCountAll({
         where: {
-          deliveryman_id: { deliveryman_id },
-          $and: [
-            Sequelize.fn('DAY', Sequelize.col('start_date')),
-            getDay(Date()),
-            Sequelize.fn('MONTH', Sequelize.col('start_date')),
-            getMonth(Date()),
-            Sequelize.fn('YEAR', Sequelize.col('start_date')),
-            getYear(Date()),
-          ],
+          deliveryman_id,
         },
       });
+
       if (deliveries.count > 5)
         return res.status(400).json({ error: 'Five deliveries exceeded' });
     }
     // Data de término menor que a data de início
     if (end_date) {
-      if (isBefore(parseISO(end_date), parseISO(delivery.start_date)))
+      if (isBefore(parseISO(end_date), parseISO(start_date)))
         return res
           .status(400)
           .json({ error: 'End date less than the start date' });
     }
 
-    const updatedDelivery = await Delivery.update(req.body);
+    const updatedDelivery = await delivery.update(req.body);
 
     return res.json(updatedDelivery);
   }
