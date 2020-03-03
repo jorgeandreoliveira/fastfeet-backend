@@ -5,7 +5,7 @@ import Delivery from '../models/Delivery';
 
 class DeliveryManController {
   async index(req, res) {
-    const { delivered, id } = req.params;
+    const { delivered, id, q } = req.params;
 
     let deliveries = [];
 
@@ -13,11 +13,23 @@ class DeliveryManController {
       return res.json(await DeliveryMan.findAll());
     }
 
+<<<<<<< HEAD
     if (id) {
       return res.json(await DeliveryMan.findByPk(id));
     }
 
     if (delivered) {
+=======
+    if (q) {
+      deliveries = await DeliveryMan.findAll({
+        where: {
+          name: {
+            [Sequelize.Op.like]: `%${q}%`,
+          },
+        },
+      });
+    } else if (delivered) {
+>>>>>>> 7514fcae85926b77db1f87dd812c0dc904c5ce02
       deliveries = await Delivery.findAll({
         where: {
           id: { id },

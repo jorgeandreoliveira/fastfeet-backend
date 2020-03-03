@@ -1,14 +1,22 @@
 import * as Yup from 'yup';
-
+import { Sequelize } from 'sequelize';
 import Recipient from '../models/Recipient';
 
 class RecipientController {
   async index(req, res) {
-    const { id } = req.params;
+    const { id, q } = req.params;
 
     let recipients = [];
 
-    if (id) {
+    if (q) {
+      recipients = await Recipient.findAll({
+        where: {
+          name: {
+            [Sequelize.Op.like]: `%${q}%`,
+          },
+        },
+      });
+    } else if (id) {
       recipients = await Recipient.findByPk(id);
     } else {
       recipients = await Recipient.findAll();
