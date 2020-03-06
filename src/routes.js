@@ -20,6 +20,13 @@ routes.post('/files', upload.single('file'), FileController.store);
 routes.post('/users', UserController.store);
 routes.post('/sessions', SessionController.store);
 
+// DeliveryMan
+routes.get('/deliveryman/:id', DeliveryManController.index);
+routes.get('/deliveryman', DeliveryManController.index);
+routes.post('/deliveryman', DeliveryManController.store);
+routes.put('/deliveryman/:id', DeliveryManController.update);
+routes.delete('/deliveryman/:id', DeliveryManController.delete);
+
 // Autentication
 routes.use(authMiddleware);
 
@@ -38,13 +45,6 @@ routes.get('/delivery/:id', DeliveryController.index);
 routes.post('/delivery', DeliveryController.store);
 routes.put('/delivery/:id', DeliveryController.update);
 routes.delete('/delivery/:id', DeliveryController.delete);
-
-// DeliveryMan
-routes.get('/deliveryman/:id', DeliveryManController.index);
-routes.get('/deliveryman', DeliveryManController.index);
-routes.post('/deliveryman', DeliveryManController.store);
-routes.put('/deliveryman/:id', DeliveryManController.update);
-routes.delete('/deliveryman/:id', DeliveryManController.delete);
 
 // DeliveryProblem
 routes.get('/deliveryproblem', DeliveryProblemController.index);

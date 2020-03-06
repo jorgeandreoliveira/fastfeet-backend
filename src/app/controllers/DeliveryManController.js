@@ -13,6 +13,13 @@ class DeliveryManController {
       return res.json(await DeliveryMan.findAll());
     }
 
+<<<<<<< HEAD
+    if (id) {
+      return res.json(await DeliveryMan.findByPk(id));
+    }
+
+    if (delivered) {
+=======
     if (q) {
       deliveries = await DeliveryMan.findAll({
         where: {
@@ -22,6 +29,7 @@ class DeliveryManController {
         },
       });
     } else if (delivered) {
+>>>>>>> 7514fcae85926b77db1f87dd812c0dc904c5ce02
       deliveries = await Delivery.findAll({
         where: {
           id: { id },
