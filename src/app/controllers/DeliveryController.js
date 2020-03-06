@@ -77,6 +77,7 @@ class DeliveryController {
           'end_date',
           'status',
         ],
+        order: [['id', 'ASC']],
         include: [
           {
             model: Recipient,
