@@ -196,7 +196,11 @@ class DeliveryController {
       return res.status(400).json({ error: 'Delivery does not exists' });
     }
 
-    await Delivery.destroy();
+    await Delivery.destroy({
+      where: {
+        id,
+      },
+    });
 
     return res.status(200).json({ msg: 'Delivery successfully deleted' });
   }
