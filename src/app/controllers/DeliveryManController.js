@@ -2,15 +2,20 @@ import * as Yup from 'yup';
 import { Sequelize } from 'sequelize';
 import DeliveryMan from '../models/DeliveryMan';
 import Delivery from '../models/Delivery';
+import Recipient from '../models/Recipient';
 
 class DeliveryManController {
   async index(req, res) {
-    const { delivered, id, q } = req.params;
+    const { id, q, delivered } = req.params;
 
     let deliveries = [];
 
     if (!delivered && !id) {
       return res.json(await DeliveryMan.findAll());
+    }
+
+    if (id && !delivered) {
+      return res.json(await DeliveryMan.findByPk(id));
     }
 
     if (q) {
@@ -21,20 +26,48 @@ class DeliveryManController {
           },
         },
       });
-    } else if (delivered) {
+    } else if (delivered === 'true') {
       deliveries = await Delivery.findAll({
         where: {
-          id: { id },
+          deliveryman_id: id,
           end_date: { [Sequelize.Op.ne]: null },
         },
+        include: [
+          {
+            model: Recipient,
+            attributes: [
+              'id',
+              'name',
+              'street',
+              'number',
+              'state',
+              'city',
+              'zipcode',
+            ],
+          },
+        ],
       });
     } else {
       deliveries = await Delivery.findAll({
         where: {
-          id: { id },
+          deliveryman_id: id,
           canceled_at: null,
           end_date: null,
         },
+        include: [
+          {
+            model: Recipient,
+            attributes: [
+              'id',
+              'name',
+              'street',
+              'number',
+              'state',
+              'city',
+              'zipcode',
+            ],
+          },
+        ],
       });
     }
     return res.json(deliveries);

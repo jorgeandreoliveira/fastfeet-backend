@@ -19,7 +19,9 @@ class RecipientController {
     } else if (id) {
       recipients = await Recipient.findByPk(id);
     } else {
-      recipients = await Recipient.findAll();
+      recipients = await Recipient.findAll({
+        order: [['id', 'ASC']],
+      });
     }
     return res.json(recipients);
   }

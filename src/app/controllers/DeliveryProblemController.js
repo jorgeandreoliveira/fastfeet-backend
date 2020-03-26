@@ -9,7 +9,11 @@ class DeliveryProblemController {
     const { id } = req.params;
 
     if (id) return res.json(await DeliveryProblem.findByPk(id));
-    return res.json(await DeliveryProblem.findAll());
+    return res.json(
+      await DeliveryProblem.findAll({
+        order: [['delivery_id', 'ASC']],
+      })
+    );
   }
 
   async store(req, res) {

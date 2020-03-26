@@ -22,7 +22,9 @@ routes.post('/sessions', SessionController.store);
 
 // DeliveryMan
 routes.get('/deliveryman/:id', DeliveryManController.index);
+routes.get('/deliveryman/:id/:delivered', DeliveryManController.index);
 routes.get('/deliveryman', DeliveryManController.index);
+routes.get('/deliveryman/:id/deliveries', DeliveryManController.index);
 routes.post('/deliveryman', DeliveryManController.store);
 routes.put('/deliveryman/:id', DeliveryManController.update);
 routes.delete('/deliveryman/:id', DeliveryManController.delete);
