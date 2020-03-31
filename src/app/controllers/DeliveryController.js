@@ -146,14 +146,14 @@ class DeliveryController {
       product,
     } = await Delivery.create(req.body);
 
-    const deliveryMan = await DeliveryMan.findByPk(recipient_id);
+    // const deliveryMan = await DeliveryMan.findByPk(recipient_id);
 
-    await Mail.sendMail({
-      to: `${deliveryMan.name} <${deliveryMan.email}>`,
-      subject: 'Produto disponível para entrega',
-      text: `${product}`,
-      template: 'layouts/default',
-    });
+    // await Mail.sendMail({
+    //   to: `${deliveryMan.name} <${deliveryMan.email}>`,
+    //   subject: 'Produto disponível para entrega',
+    //   text: `${product}`,
+    //   template: 'layouts/default',
+    // });
 
     return res.json({
       id,
