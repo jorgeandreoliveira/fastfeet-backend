@@ -5,6 +5,7 @@ import Delivery from '../models/Delivery';
 import DeliveryMan from '../models/DeliveryMan';
 import Mail from '../../lib/Mail';
 import Recipient from '../models/Recipient';
+import DeliveryProblem from '../models/DeliveryProblem';
 
 class DeliveryController {
   async index(req, res) {
@@ -26,6 +27,7 @@ class DeliveryController {
           'product',
           'canceled_at',
           'start_date',
+          'start_date_formated',
           'end_date',
           'status',
         ],
@@ -50,6 +52,17 @@ class DeliveryController {
       });
     } else if (id) {
       deliveries = await Delivery.findByPk(id, {
+        attributes: [
+          'id',
+          'recipient_id',
+          'deliveryman_id',
+          'product',
+          'canceled_at',
+          'start_date',
+          'start_date_formated',
+          'end_date',
+          'status',
+        ],
         include: [
           {
             model: Recipient,
@@ -63,6 +76,10 @@ class DeliveryController {
               'zipcode',
             ],
           },
+          {
+            model: DeliveryProblem,
+            attributes: ['id', 'description', 'created_at'],
+          },
         ],
       });
     } else {
@@ -74,6 +91,7 @@ class DeliveryController {
           'product',
           'canceled_at',
           'start_date',
+          'start_date_formated',
           'end_date',
           'status',
         ],
@@ -94,6 +112,10 @@ class DeliveryController {
           {
             model: DeliveryMan,
             attributes: ['id', 'name'],
+          },
+          {
+            model: DeliveryProblem,
+            attributes: ['id', 'description', 'created_at'],
           },
         ],
       });

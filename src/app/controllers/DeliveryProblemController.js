@@ -6,9 +6,20 @@ import Mail from '../../lib/Mail';
 
 class DeliveryProblemController {
   async index(req, res) {
-    const { id } = req.params;
+    const { id, delivery_id } = req.params;
 
-    if (id) return res.json(await DeliveryProblem.findByPk(id));
+    if (id) {
+      return res.json(await DeliveryProblem.findByPk(id));
+    }
+
+    if (delivery_id) {
+      return res.json(
+        await DeliveryProblem.findAll({
+          where: { delivery_id },
+        })
+      );
+    }
+
     return res.json(
       await DeliveryProblem.findAll({
         order: [['delivery_id', 'ASC']],

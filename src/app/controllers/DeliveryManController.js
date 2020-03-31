@@ -3,6 +3,7 @@ import { Sequelize } from 'sequelize';
 import DeliveryMan from '../models/DeliveryMan';
 import Delivery from '../models/Delivery';
 import Recipient from '../models/Recipient';
+import DeliveryProblem from '../models/DeliveryProblem';
 
 class DeliveryManController {
   async index(req, res) {
@@ -32,6 +33,18 @@ class DeliveryManController {
           deliveryman_id: id,
           end_date: { [Sequelize.Op.ne]: null },
         },
+        attributes: [
+          'id',
+          'recipient_id',
+          'deliveryman_id',
+          'product',
+          'created_at',
+          'canceled_at',
+          'start_date',
+          'start_date_formated',
+          'end_date',
+          'status',
+        ],
         include: [
           {
             model: Recipient,
@@ -45,6 +58,10 @@ class DeliveryManController {
               'zipcode',
             ],
           },
+          {
+            model: DeliveryProblem,
+            attributes: ['id', 'description', 'created_at'],
+          },
         ],
       });
     } else {
@@ -54,6 +71,18 @@ class DeliveryManController {
           canceled_at: null,
           end_date: null,
         },
+        attributes: [
+          'id',
+          'recipient_id',
+          'deliveryman_id',
+          'product',
+          'canceled_at',
+          'created_at',
+          'start_date',
+          'start_date_formated',
+          'end_date',
+          'status',
+        ],
         include: [
           {
             model: Recipient,
@@ -66,6 +95,10 @@ class DeliveryManController {
               'city',
               'zipcode',
             ],
+          },
+          {
+            model: DeliveryProblem,
+            attributes: ['id', 'description', 'created_at'],
           },
         ],
       });
