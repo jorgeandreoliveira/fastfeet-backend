@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-
 import authConfig from '../../config/auth';
 import User from '../models/User';
 

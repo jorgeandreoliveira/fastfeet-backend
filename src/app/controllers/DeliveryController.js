@@ -27,7 +27,6 @@ class DeliveryController {
           'product',
           'canceled_at',
           'start_date',
-          'start_date_formated',
           'end_date',
           'status',
         ],
@@ -59,7 +58,6 @@ class DeliveryController {
           'product',
           'canceled_at',
           'start_date',
-          'start_date_formated',
           'end_date',
           'status',
         ],
@@ -91,7 +89,6 @@ class DeliveryController {
           'product',
           'canceled_at',
           'start_date',
-          'start_date_formated',
           'end_date',
           'status',
         ],
@@ -146,14 +143,14 @@ class DeliveryController {
       product,
     } = await Delivery.create(req.body);
 
-    // const deliveryMan = await DeliveryMan.findByPk(recipient_id);
+    const deliveryMan = await DeliveryMan.findByPk(deliveryman_id);
 
-    // await Mail.sendMail({
-    //   to: `${deliveryMan.name} <${deliveryMan.email}>`,
-    //   subject: 'Produto disponível para entrega',
-    //   text: `${product}`,
-    //   template: 'layouts/default',
-    // });
+    await Mail.sendMail({
+      to: `${deliveryMan.name} <${deliveryMan.email}>`,
+      subject: 'Produto disponível para entrega',
+      text: `${product}`,
+      template: 'layouts/default',
+    });
 
     return res.json({
       id,
@@ -176,9 +173,7 @@ class DeliveryController {
 
     let deliveries = 0;
 
-    if (start_date) {
-      // A data de início deve ser cadastrada assim que for feita a retirada do produto pelo entregador,
-      // e as retiradas só podem ser feitas entre as 08:00 e 18:00h.
+    if (start_date && !end_date) {
       if (
         getHours(parseISO(start_date)) < 8 ||
         getHours(parseISO(start_date)) > 18
@@ -187,7 +182,6 @@ class DeliveryController {
           .status(400)
           .json({ error: 'Hour outside the allowed limit 08:00h - 18:00h' });
 
-      // O entregador só pode fazer 5 retiradas por dia
       deliveries = await Delivery.findAndCountAll({
         where: {
           deliveryman_id,
@@ -197,17 +191,19 @@ class DeliveryController {
       if (deliveries.count > 5)
         return res.status(400).json({ error: 'Five deliveries exceeded' });
     }
-    // Data de término menor que a data de início
+
     if (end_date) {
-      if (isBefore(parseISO(end_date), parseISO(start_date)))
+      if (isBefore(parseISO(end_date), parseISO(delivery.start_date)))
         return res
           .status(400)
           .json({ error: 'End date less than the start date' });
     }
 
-    const updatedDelivery = await delivery.update(req.body);
+    await delivery.update(req.body);
 
-    return res.json(updatedDelivery);
+    const response = await Delivery.findByPk(id);
+
+    return res.json(response.data);
   }
 
   async delete(req, res) {

@@ -50,6 +50,7 @@ class Delivery extends Model {
     this.belongsTo(models.Recipient, { foreignKey: 'recipient_id' });
     this.belongsTo(models.DeliveryMan, { foreignKey: 'deliveryman_id' });
     this.belongsTo(models.File, { foreignKey: 'signature_id' });
+    this.hasMany(models.DeliveryProblem, { foreignKey: 'delivery_id' });
   }
 }
 
