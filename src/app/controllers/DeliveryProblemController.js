@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { parseISO, format } from 'date-fns';
 import Delivery from '../models/Delivery';
 import DeliveryMan from '../models/DeliveryMan';
 import DeliveryProblem from '../models/DeliveryProblem';
@@ -52,7 +53,7 @@ class DeliveryProblemController {
 
   async update(req, res) {
     const { id } = req.params;
-
+    const { canceled_at } = req.body;
     const delivery = await Delivery.findByPk(id);
 
     if (!delivery) {
@@ -66,8 +67,12 @@ class DeliveryProblemController {
     await Mail.sendMail({
       to: `${deliveryMan.name} <${deliveryMan.email}>`,
       subject: 'Encomenda cancelada',
-      text: `${delivery.id} - ${delivery.product}`,
-      template: 'layouts/default',
+      template: 'canceldelivery',
+      context: {
+        entregador: deliveryMan.name,
+        produto: delivery.product,
+        data: format(parseISO(canceled_at), 'dd/MM/yyyy HH:mm'),
+      },
     });
 
     return res.json(updatedDelivery);
