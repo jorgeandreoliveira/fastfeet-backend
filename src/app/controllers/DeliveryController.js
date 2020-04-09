@@ -29,6 +29,8 @@ class DeliveryController {
           'start_date',
           'end_date',
           'status',
+          'color',
+          'backgroundcolor',
         ],
         include: [
           {
@@ -60,6 +62,8 @@ class DeliveryController {
           'start_date',
           'end_date',
           'status',
+          'color',
+          'backgroundcolor',
         ],
         include: [
           {
@@ -91,6 +95,8 @@ class DeliveryController {
           'start_date',
           'end_date',
           'status',
+          'color',
+          'backgroundcolor',
         ],
         order: [['id', 'ASC']],
         include: [

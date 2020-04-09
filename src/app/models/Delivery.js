@@ -20,6 +20,7 @@ class Delivery extends Model {
           type: Sequelize.VIRTUAL,
           get() {
             if (this.getDataValue('end_date') != null) return 'ENTREGUE';
+            if (this.getDataValue('canceled_at') != null) return 'CANCELADA';
             if (
               this.getDataValue('start_date') == null &&
               this.getDataValue('end_date') == null
@@ -32,6 +33,44 @@ class Delivery extends Model {
               return 'RETIRADA';
 
             return 'PENDENTE';
+          },
+        },
+        color: {
+          type: Sequelize.VIRTUAL,
+          get() {
+            if (this.getDataValue('end_date') != null) return '#2CA42B';
+            if (this.getDataValue('canceled_at') != null) return '#DE3B3B';
+            if (
+              this.getDataValue('start_date') == null &&
+              this.getDataValue('end_date') == null
+            )
+              return '#C1BC35';
+            if (
+              this.getDataValue('start_date') != null &&
+              this.getDataValue('end_date') == null
+            )
+              return '#4D85EE';
+
+            return '#C1BC35';
+          },
+        },
+        backgroundcolor: {
+          type: Sequelize.VIRTUAL,
+          get() {
+            if (this.getDataValue('end_date') != null) return '#DFF0DF';
+            if (this.getDataValue('canceled_at') != null) return '#FAB0B0';
+            if (
+              this.getDataValue('start_date') == null &&
+              this.getDataValue('end_date') == null
+            )
+              return '#F0F0DF';
+            if (
+              this.getDataValue('start_date') != null &&
+              this.getDataValue('end_date') == null
+            )
+              return '#BAD2FF';
+
+            return '#F0F0DF';
           },
         },
       },
