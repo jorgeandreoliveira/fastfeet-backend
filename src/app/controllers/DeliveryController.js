@@ -180,8 +180,6 @@ class DeliveryController {
       return res.status(400).json({ error: 'Delivery dos not exists' });
     }
 
-    let deliveries = 0;
-
     if (start_date && !end_date) {
       if (
         getHours(parseISO(start_date)) < 8 ||
@@ -189,24 +187,19 @@ class DeliveryController {
       )
         return res
           .status(400)
-          .json({ error: 'Hour outside the allowed limit 08:00h - 18:00h' });
-
-      deliveries = await Delivery.findAndCountAll({
-        where: {
-          deliveryman_id,
-        },
-      });
-
-      if (deliveries.count > 5)
-        return res.status(400).json({ error: 'Five deliveries exceeded' });
+          .json({ error: 'Retirada permitida de 08:00h às 18:00h' });
     }
 
-    if (end_date) {
-      if (isBefore(parseISO(end_date), parseISO(delivery.start_date)))
-        return res
-          .status(400)
-          .json({ error: 'End date less than the start date' });
-    }
+    const deliveries = await Delivery.findAndCountAll({
+      where: {
+        deliveryman_id,
+      },
+    });
+
+    if (deliveries.count > 5)
+      return res
+        .status(400)
+        .json({ error: 'Limite de cinco entregas excedido!' });
 
     await delivery.update(req.body);
 
