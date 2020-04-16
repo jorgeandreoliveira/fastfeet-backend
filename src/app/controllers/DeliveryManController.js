@@ -4,6 +4,7 @@ import DeliveryMan from '../models/DeliveryMan';
 import Delivery from '../models/Delivery';
 import Recipient from '../models/Recipient';
 import DeliveryProblem from '../models/DeliveryProblem';
+import File from '../models/File';
 
 class DeliveryManController {
   async index(req, res) {
@@ -16,7 +17,18 @@ class DeliveryManController {
     }
 
     if (id && !delivered) {
-      return res.json(await DeliveryMan.findByPk(id));
+      return res.json(
+        await DeliveryMan.findOne({
+          where: { id },
+          include: [
+            {
+              model: File,
+              as: 'avatar',
+              attributes: ['id', 'path', 'url'],
+            },
+          ],
+        })
+      );
     }
 
     if (q) {

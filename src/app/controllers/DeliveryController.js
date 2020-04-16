@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { getHours, isBefore, parseISO } from 'date-fns';
+import { getHours, parseISO } from 'date-fns';
 import { Sequelize } from 'sequelize';
 import Delivery from '../models/Delivery';
 import DeliveryMan from '../models/DeliveryMan';
