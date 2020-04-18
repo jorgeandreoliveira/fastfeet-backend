@@ -6,6 +6,7 @@ import DeliveryMan from '../models/DeliveryMan';
 import Mail from '../../lib/Mail';
 import Recipient from '../models/Recipient';
 import DeliveryProblem from '../models/DeliveryProblem';
+import File from '../models/File';
 
 class DeliveryController {
   async index(req, res) {
@@ -49,6 +50,11 @@ class DeliveryController {
             model: DeliveryMan,
             attributes: ['id', 'name'],
           },
+          {
+            model: File,
+            as: 'signature',
+            attributes: ['name', 'path', 'url'],
+          },
         ],
       });
     } else if (id) {
@@ -81,6 +87,11 @@ class DeliveryController {
           {
             model: DeliveryProblem,
             attributes: ['id', 'description', 'created_at'],
+          },
+          {
+            model: File,
+            as: 'signature',
+            attributes: ['name', 'path', 'url'],
           },
         ],
       });
@@ -119,6 +130,11 @@ class DeliveryController {
           {
             model: DeliveryProblem,
             attributes: ['id', 'description', 'created_at'],
+          },
+          {
+            model: File,
+            as: 'signature',
+            attributes: ['name', 'path', 'url'],
           },
         ],
       });
@@ -172,7 +188,7 @@ class DeliveryController {
 
   async update(req, res) {
     const { id } = req.params;
-    const { start_date, end_date, deliveryman_id } = req.body;
+    const { start_date, end_date, deliveryman_id, signature_id } = req.body;
 
     const delivery = await Delivery.findByPk(id);
 
@@ -180,29 +196,35 @@ class DeliveryController {
       return res.status(400).json({ error: 'Delivery dos not exists' });
     }
 
-    if (start_date && !end_date) {
-      if (
-        getHours(parseISO(start_date)) < 8 ||
-        getHours(parseISO(start_date)) > 18
-      )
+    if (signature_id) {
+      await delivery.update({
+        signature_id,
+        end_date: new Date(),
+      });
+    } else {
+      if (start_date && !end_date) {
+        if (
+          getHours(parseISO(start_date)) < 8 ||
+          getHours(parseISO(start_date)) > 18
+        )
+          return res
+            .status(400)
+            .json({ error: 'Retirada permitida de 08:00h às 18:00h' });
+      }
+
+      const deliveries = await Delivery.findAndCountAll({
+        where: {
+          deliveryman_id,
+        },
+      });
+
+      if (deliveries.count > 5)
         return res
           .status(400)
-          .json({ error: 'Retirada permitida de 08:00h às 18:00h' });
+          .json({ error: 'Limite de cinco entregas excedido!' });
+
+      await delivery.update(req.body);
     }
-
-    const deliveries = await Delivery.findAndCountAll({
-      where: {
-        deliveryman_id,
-      },
-    });
-
-    if (deliveries.count > 5)
-      return res
-        .status(400)
-        .json({ error: 'Limite de cinco entregas excedido!' });
-
-    await delivery.update(req.body);
-
     const response = await Delivery.findByPk(id);
 
     return res.json(response.data);
